@@ -31,8 +31,8 @@
 Task_t	tlFail[] =
 {
 	{ TASK_STOP_MOVING,			0				},
-	{ TASK_SET_ACTIVITY,		(float)ACT_IDLE },
-	{ TASK_WAIT,				(float)2		},
+//	{ TASK_SET_ACTIVITY,		(float)ACT_IDLE },
+//	{ TASK_WAIT,				(float)2		},
 	{ TASK_WAIT_PVS,			(float)0		},
 };
 
@@ -221,7 +221,7 @@ Schedule_t slWakeAngry[] =
 Task_t	tlAlertFace1[] =
 {
 	{ TASK_STOP_MOVING,				0				},
-	{ TASK_SET_ACTIVITY,			(float)ACT_IDLE	},
+//	{ TASK_SET_ACTIVITY,			(float)ACT_IDLE	},
 	{ TASK_FACE_IDEAL,				(float)0		},
 };
 
@@ -270,7 +270,7 @@ Task_t	tlAlertStand1[] =
 {
 	{ TASK_STOP_MOVING,			0						 },
 	{ TASK_SET_ACTIVITY,		(float)ACT_IDLE			 },
-	{ TASK_WAIT,				(float)20				 },
+//	{ TASK_WAIT,				(float)20				 },
 	{ TASK_SUGGEST_STATE,		(float)MONSTERSTATE_IDLE },
 };
 
@@ -638,14 +638,14 @@ Schedule_t slChaseEnemy[] =
 Task_t	tlChaseEnemyFailed[] =
 {
 	{ TASK_STOP_MOVING,				(float)0					},
-	{ TASK_WAIT,					(float)0.2					},
+//	{ TASK_WAIT,					(float)0.2					},
 	{ TASK_FIND_COVER_FROM_ENEMY,	(float)0					},
 	{ TASK_RUN_PATH,				(float)0					},
 	{ TASK_WAIT_FOR_MOVEMENT,		(float)0					},
 	{ TASK_REMEMBER,				(float)bits_MEMORY_INCOVER	},
 //	{ TASK_TURN_LEFT,				(float)179					},
 	{ TASK_FACE_ENEMY,				(float)0					},
-	{ TASK_WAIT,					(float)1					},
+//	{ TASK_WAIT,					(float)1					},
 };
 
 Schedule_t	slChaseEnemyFailed[] =
@@ -672,7 +672,7 @@ Schedule_t	slChaseEnemyFailed[] =
 Task_t tlSmallFlinch[] =
 {
 	{ TASK_REMEMBER,			(float)bits_MEMORY_FLINCHED },
-	{ TASK_STOP_MOVING,			0	},
+//	{ TASK_STOP_MOVING,			0	},
 	{ TASK_SMALL_FLINCH,		0	},
 };
 
@@ -957,14 +957,14 @@ Schedule_t	slTakeCoverFromBestSound[] =
 Task_t	tlTakeCoverFromEnemy[] =
 {
 	{ TASK_STOP_MOVING,				(float)0					},
-	{ TASK_WAIT,					(float)0.2					},
+//	{ TASK_WAIT,					(float)0.2					},
 	{ TASK_FIND_COVER_FROM_ENEMY,	(float)0					},
 	{ TASK_RUN_PATH,				(float)0					},
-	{ TASK_WAIT_FOR_MOVEMENT,		(float)0					},
+//	{ TASK_WAIT_FOR_MOVEMENT,		(float)0					},
 	{ TASK_REMEMBER,				(float)bits_MEMORY_INCOVER	},
 //	{ TASK_TURN_LEFT,				(float)179					},
 	{ TASK_FACE_ENEMY,				(float)0					},
-	{ TASK_WAIT,					(float)1					},
+//	{ TASK_WAIT,					(float)1					},
 };
 
 Schedule_t	slTakeCoverFromEnemy[] =

@@ -34,10 +34,11 @@ enum shotgun_e {
 	SHOTGUN_PUMP,
 	SHOTGUN_START_RELOAD,
 	SHOTGUN_DRAW,
-	SHOTGUN_HOLSTER,
-	SHOTGUN_IDLE4,
-	SHOTGUN_IDLE_DEEP
+	//SHOTGUN_HOLSTER,
+	//SHOTGUN_IDLE4,
+	//SHOTGUN_IDLE_DEEP
 };
+
 
 LINK_ENTITY_TO_CLASS( weapon_shotgun, CShotgun );
 
@@ -177,13 +178,16 @@ void CShotgun::PrimaryAttack()
 
 	m_flPumpTime = gpGlobals->time + 0.5;
 
-	m_flNextPrimaryAttack = GetNextAttackDelay(0.75);
-	m_flNextSecondaryAttack = UTIL_WeaponTimeBase() + 0.75;
+	m_flNextPrimaryAttack = GetNextAttackDelay(0.5);
+	m_flNextSecondaryAttack = UTIL_WeaponTimeBase() + 0.5;
 	if (m_iClip != 0)
 		m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 5.0;
 	else
-		m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 0.75;
+		m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 0.5;
 	m_fInSpecialReload = 0;
+
+
+	m_pPlayer->pev->punchangle.x -= 5;
 }
 
 
@@ -250,8 +254,8 @@ void CShotgun::SecondaryAttack( void )
 
 	m_flPumpTime = gpGlobals->time + 0.95;
 
-	m_flNextPrimaryAttack = GetNextAttackDelay(1.5);
-	m_flNextSecondaryAttack = UTIL_WeaponTimeBase() + 1.5;
+	m_flNextPrimaryAttack = GetNextAttackDelay(0.5);
+	m_flNextSecondaryAttack = UTIL_WeaponTimeBase() + 0.5;
 	if (m_iClip != 0)
 		m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 6.0;
 	else
@@ -259,6 +263,7 @@ void CShotgun::SecondaryAttack( void )
 
 	m_fInSpecialReload = 0;
 
+	m_pPlayer->pev->punchangle.x -= 10;
 }
 
 
@@ -344,7 +349,7 @@ void CShotgun::WeaponIdle( void )
 			float flRand = UTIL_SharedRandomFloat( m_pPlayer->random_seed, 0, 1 );
 			if (flRand <= 0.8)
 			{
-				iAnim = SHOTGUN_IDLE_DEEP;
+				iAnim = SHOTGUN_IDLE;
 				m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + (60.0/12.0);// * RANDOM_LONG(2, 5);
 			}
 			else if (flRand <= 0.95)
@@ -354,7 +359,7 @@ void CShotgun::WeaponIdle( void )
 			}
 			else
 			{
-				iAnim = SHOTGUN_IDLE4;
+				iAnim = SHOTGUN_IDLE;
 				m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + (20.0/9.0);
 			}
 			SendWeaponAnim( iAnim );

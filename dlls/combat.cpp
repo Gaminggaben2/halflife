@@ -37,8 +37,8 @@ extern Vector VecBModelOrigin( entvars_t* pevBModel );
 extern entvars_t *g_pevLastInflictor;
 
 #define GERMAN_GIB_COUNT		4
-#define	HUMAN_GIB_COUNT			6
-#define ALIEN_GIB_COUNT			4
+#define	HUMAN_GIB_COUNT			10
+#define ALIEN_GIB_COUNT			8
 
 
 // HACKHACK -- The gib velocity equations don't work
@@ -180,6 +180,58 @@ void CGib :: SpawnHeadGib( entvars_t *pevVictim )
 	pGib->LimitVelocity();
 }
 
+void CGib :: SpawnSkullGib( entvars_t *pevVictim )
+{
+	CGib *pGib = GetClassPtr( (CGib *)NULL );
+
+
+		pGib->Spawn( "models/skull.mdl" );// throw one head
+		pGib->pev->body = 0;
+	
+
+	if ( pevVictim )
+	{
+		pGib->pev->origin = pevVictim->origin + pevVictim->view_ofs;
+		
+		edict_t		*pentPlayer = FIND_CLIENT_IN_PVS( pGib->edict() );
+		
+		if ( RANDOM_LONG ( 0, 100 ) <= 5 && pentPlayer )
+		{
+			// 5% chance head will be thrown at player's face.
+			entvars_t	*pevPlayer;
+
+			pevPlayer = VARS( pentPlayer );
+			pGib->pev->velocity = ( ( pevPlayer->origin + pevPlayer->view_ofs ) - pGib->pev->origin ).Normalize() * 300;
+			pGib->pev->velocity.z += 100;
+		}
+		else
+		{
+			pGib->pev->velocity = Vector (RANDOM_FLOAT(-100,100), RANDOM_FLOAT(-100,100), RANDOM_FLOAT(200,300));
+		}
+
+
+		pGib->pev->avelocity.x = RANDOM_FLOAT ( 100, 200 );
+		pGib->pev->avelocity.y = RANDOM_FLOAT ( 100, 300 );
+
+		// copy owner's blood color
+		pGib->m_bloodColor = (CBaseEntity::Instance(pevVictim))->BloodColor();
+	
+		if ( pevVictim->health > -50)
+		{
+			pGib->pev->velocity = pGib->pev->velocity * 0.7;
+		}
+		else if ( pevVictim->health > -200)
+		{
+			pGib->pev->velocity = pGib->pev->velocity * 2;
+		}
+		else
+		{
+			pGib->pev->velocity = pGib->pev->velocity * 4;
+		}
+	}
+	pGib->LimitVelocity();
+}
+
 void CGib :: SpawnRandomGibs( entvars_t *pevVictim, int cGibs, int human )
 {
 	int cSplat;
@@ -260,7 +312,9 @@ BOOL CBaseMonster :: HasHumanGibs( void )
 	if ( myClass == CLASS_HUMAN_MILITARY ||
 		 myClass == CLASS_PLAYER_ALLY	||
 		 myClass == CLASS_HUMAN_PASSIVE  ||
+		 myClass == CLASS_ALIEN_MONSTER	||
 		 myClass == CLASS_PLAYER )
+	
 
 		 return TRUE;
 
@@ -273,7 +327,6 @@ BOOL CBaseMonster :: HasAlienGibs( void )
 	int myClass = Classify();
 
 	if ( myClass == CLASS_ALIEN_MILITARY ||
-		 myClass == CLASS_ALIEN_MONSTER	||
 		 myClass == CLASS_ALIEN_PASSIVE  ||
 		 myClass == CLASS_INSECT  ||
 		 myClass == CLASS_ALIEN_PREDATOR  ||
@@ -314,6 +367,7 @@ void CBaseMonster :: GibMonster( void )
 		{
 			CGib::SpawnHeadGib( pev );
 			CGib::SpawnRandomGibs( pev, 4, 1 );	// throw some human gibs.
+			CGib::SpawnStickyGibs(pev, pev->origin + pev-> view_ofs, 10);	// throw some human gibs. ( entvars_t *pevVictim, Vector vecOrigin, int cGibs ) ( entvars_t *pevVictim, int cGibs, int human )
 		}
 		gibbed = TRUE;
 	}
@@ -321,7 +375,7 @@ void CBaseMonster :: GibMonster( void )
 	{
 		if ( CVAR_GET_FLOAT("violence_agibs") != 0 )	// Should never get here, but someone might call it directly
 		{
-			CGib::SpawnRandomGibs( pev, 4, 0 );	// Throw alien gibs
+			CGib::SpawnRandomGibs( pev, 4, 1 );	// Throw alien gibs
 		}
 		gibbed = TRUE;
 	}
@@ -525,10 +579,10 @@ void CBaseMonster::BecomeDead( void )
 
 	// make the corpse fly away from the attack vector
 	pev->movetype = MOVETYPE_TOSS;
-	//pev->flags &= ~FL_ONGROUND;
-	//pev->origin.z += 2;
-	//pev->velocity = g_vecAttackDir * -1;
-	//pev->velocity = pev->velocity * RANDOM_FLOAT( 300, 400 );
+	pev->flags &= ~FL_ONGROUND;
+	pev->origin.z += 2;
+	pev->velocity = g_vecAttackDir * -1;
+	pev->velocity = pev->velocity * RANDOM_FLOAT( 300, 400 );
 }
 
 

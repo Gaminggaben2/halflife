@@ -28,7 +28,7 @@
 #define DISC_VELOCITY				1000			// Velocity multiplier for discs when thrown
 #define DISC_PUSH_MULTIPLIER		1200			// Velocity multiplier used to push a player when hit by a disc
 
-//#define DISC_POWERUP_TIME			5				// Time (in seconds) a powerup lasts for
+#define DISC_POWERUP_TIME			5				// Time (in seconds) a powerup lasts for
 #define DISC_POWERUP_RESPAWN_TIME	10				// Time (in seconds) it takes after a powerup is picked up before the next one appears
 
 #define MAX_SCORE_TIME_AFTER_HIT	4.0				// Time (in seconds) in which a player gets a point if the enemy dies within this time
@@ -39,10 +39,9 @@
 #define	POW_FAST					(1<<1)
 #define	POW_HARD					(1<<2)
 #define	POW_FREEZE					(1<<3)
-
 #define POW_VISUALIZE_REBOUNDS		(1<<4)			// Removing this one for now
 
-#define	NUM_POWERUPS				4				// 4, not 5, because VISUALIZE_REBOUNDS is removed.
+#define	NUM_POWERUPS				5				// 4, not 5, because VISUALIZE_REBOUNDS is removed.
 
 #define FREEZE_TIME					7
 #define	FREEZE_SPEED				50

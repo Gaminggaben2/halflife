@@ -533,6 +533,8 @@ void CWorld :: Precache( void )
 	PRECACHE_SOUND( "items/suitchargeok1.wav" );//!!! temporary sound for respawning weapons.
 	PRECACHE_SOUND( "items/gunpickup2.wav" );// player picks up a gun.
 
+	PRECACHE_SOUND( "common/bodydrop1.wav" );// dead bodies hitting the ground (animation events)
+	PRECACHE_SOUND( "common/bodydrop2.wav" );
 	PRECACHE_SOUND( "common/bodydrop3.wav" );// dead bodies hitting the ground (animation events)
 	PRECACHE_SOUND( "common/bodydrop4.wav" );
 	
@@ -544,7 +546,9 @@ void CWorld :: Precache( void )
 	else
 	{
 		PRECACHE_MODEL( "models/hgibs.mdl" );
+		PRECACHE_MODEL( "models/skull.mdl" );
 		PRECACHE_MODEL( "models/agibs.mdl" );
+		PRECACHE_MODEL( "models/stickygib.mdl" );
 	}
 
 	PRECACHE_SOUND ("weapons/ric1.wav");

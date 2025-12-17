@@ -32,7 +32,14 @@
 #define	ZOMBIE_AE_ATTACK_LEFT		0x02
 #define	ZOMBIE_AE_ATTACK_BOTH		0x03
 
-#define ZOMBIE_FLINCH_DELAY			2		// at most one flinch every n secs
+#define ZOMBIE_FLINCH_DELAY			1.5		// at most one flinch every n secs
+
+#define HEAD_GROUP					1
+#define HEAD_NORM					0
+#define HEAD_BLOWN					1
+
+#define ZOMBIE_DMG_HEADSHOT				( DMG_BULLET | DMG_CLUB )	
+#define ZOMBIE_MINIMUM_HEADSHOT_DAMAGE	1
 
 class CZombie : public CBaseMonster
 {
@@ -43,7 +50,7 @@ public:
 	int  Classify ( void );
 	void HandleAnimEvent( MonsterEvent_t *pEvent );
 	int IgnoreConditions ( void );
-
+	void TraceAttack( entvars_t *pevAttacker, float flDamage, Vector vecDir, TraceResult *ptr, int bitsDamageType);
 	float m_flNextFlinch;
 
 	void PainSound( void );
@@ -136,16 +143,6 @@ void CZombie :: SetYawSpeed ( void )
 
 int CZombie :: TakeDamage( entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType )
 {
-	// Take 30% damage from bullets
-	if ( bitsDamageType == DMG_BULLET )
-	{
-		Vector vecDir = pev->origin - (pevInflictor->absmin + pevInflictor->absmax) * 0.5;
-		vecDir = vecDir.Normalize();
-		float flForce = DamageForce( flDamage );
-		pev->velocity = pev->velocity + vecDir * flForce;
-		flDamage *= 0.3;
-	}
-
 	// HACK HACK -- until we fix this.
 	if ( IsAlive() )
 		PainSound();
@@ -264,6 +261,81 @@ void CZombie :: HandleAnimEvent( MonsterEvent_t *pEvent )
 	}
 }
 
+void CZombie :: TraceAttack( entvars_t *pevAttacker, float flDamage, Vector vecDir, TraceResult *ptr, int bitsDamageType)
+{
+	if ( pev->takedamage )
+	{
+		m_LastHitGroup = ptr->iHitgroup;
+
+		switch ( ptr->iHitgroup )
+		{
+		case HITGROUP_GENERIC:
+			break;
+		case HITGROUP_HEAD:
+			if (GetBodygroup( 1 ) == HEAD_NORM && (bitsDamageType & (DMG_BULLET | DMG_SLASH | DMG_BLAST | DMG_CLUB)))
+			{
+				UTIL_BloodStream( pev->origin, UTIL_RandomBloodVector(), BLOOD_COLOR_RED, RANDOM_LONG(50, 150) );
+				SetBodygroup( HEAD_GROUP, HEAD_BLOWN );
+				CGib::SpawnSkullGib( pev );
+			}
+			break;
+		case HITGROUP_CHEST:
+			break;
+		case HITGROUP_STOMACH:
+			break;
+		case HITGROUP_LEFTARM:
+		if (GetBodygroup( 2 ) == HEAD_NORM && (bitsDamageType & (DMG_BULLET | DMG_SLASH | DMG_BLAST | DMG_CLUB)))
+		{
+			UTIL_BloodStream( pev->origin, UTIL_RandomBloodVector(), BLOOD_COLOR_RED, RANDOM_LONG(50, 150) );
+			SetBodygroup( 2, HEAD_BLOWN );
+//			CGib::SpawnSkullGib( pev );
+		}
+			break;
+		case HITGROUP_RIGHTARM:
+		if (GetBodygroup( 3 ) == HEAD_NORM && (bitsDamageType & (DMG_BULLET | DMG_SLASH | DMG_BLAST | DMG_CLUB)))
+		{
+			UTIL_BloodStream( pev->origin, UTIL_RandomBloodVector(), BLOOD_COLOR_RED, RANDOM_LONG(50, 150) );
+			SetBodygroup( 3, HEAD_BLOWN );
+//			CGib::SpawnSkullGib( pev );
+		}
+			break;
+		case HITGROUP_LEFTLEG:
+		if (GetBodygroup( 4 ) == HEAD_NORM && (bitsDamageType & (DMG_BULLET | DMG_SLASH | DMG_BLAST | DMG_CLUB)))
+		{
+			UTIL_BloodStream( pev->origin, UTIL_RandomBloodVector(), BLOOD_COLOR_RED, RANDOM_LONG(50, 150) );
+			SetBodygroup( 4, HEAD_BLOWN );
+//			CGib::SpawnSkullGib( pev );
+		}
+		break;
+		case HITGROUP_RIGHTLEG:
+		if (GetBodygroup( 5 ) == HEAD_NORM && (bitsDamageType & (DMG_BULLET | DMG_SLASH | DMG_BLAST | DMG_CLUB)))
+		{
+			UTIL_BloodStream( vecBloodOffset, UTIL_RandomBloodVector(), BLOOD_COLOR_RED, RANDOM_LONG(80, 150) );
+			SetBodygroup( 5, HEAD_BLOWN );
+//			CGib::SpawnSkullGib( pev );
+		}
+			break;
+		default:
+			break;
+		}
+	}
+	// check for helmet shot
+	
+//	if (ptr->iHitgroup == 1)
+//	{
+		// damage type
+//		if (GetBodygroup( 1 ) == HEAD_NORM && (bitsDamageType & (DMG_BULLET | DMG_SLASH | DMG_BLAST | DMG_CLUB)))
+//		{
+//			SetBodygroup( HEAD_GROUP, HEAD_BLOWN );
+//			CGib::SpawnSkullGib( pev );
+//		}
+//		
+//		ptr->iHitgroup = HITGROUP_HEAD;
+//
+//	}
+	CBaseMonster :: TraceAttack( pevAttacker, flDamage, vecDir, ptr, bitsDamageType );
+}
+
 //=========================================================
 // Spawn
 //=========================================================
@@ -276,12 +348,12 @@ void CZombie :: Spawn()
 
 	pev->solid			= SOLID_SLIDEBOX;
 	pev->movetype		= MOVETYPE_STEP;
-	m_bloodColor		= BLOOD_COLOR_GREEN;
+	m_bloodColor		= BLOOD_COLOR_RED;
 	pev->health			= gSkillData.zombieHealth;
 	pev->view_ofs		= VEC_VIEW;// position of the eyes relative to monster's origin.
 	m_flFieldOfView		= 0.5;// indicates the width of this monster's forward view cone ( as a dotproduct result )
 	m_MonsterState		= MONSTERSTATE_NONE;
-	m_afCapability		= bits_CAP_DOORS_GROUP;
+	m_afCapability		= bits_CAP_HEAR | bits_CAP_TURN_HEAD | bits_CAP_DOORS_GROUP;
 
 	MonsterInit();
 }
